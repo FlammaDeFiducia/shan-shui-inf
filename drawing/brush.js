@@ -1,5 +1,11 @@
+// Brush marks: the stroke, blob and texture primitives that give lines
+// their hand-drawn, uneven look.
+
 console.log("************************************************");
 
+// A brush stroke along ptlist: a thin polygon whose width follows
+// args.fun along its length, roughened by noise. args: wid width, col
+// colour, noi amount of noise, out outline width.
 function stroke(ptlist, args) {
   var args = args != undefined ? args : {};
   var xof = args.xof != undefined ? args.xof : 0;
@@ -62,6 +68,8 @@ function stroke(ptlist, args) {
   return canv;
 }
 
+// A single leaf-like dab at (x, y). args: len, wid, ang angle, col,
+// noi, fun outline profile; ret=1 returns the points instead of markup.
 function blob(x, y, args) {
   var args = args != undefined ? args : {};
   var len = args.len != undefined ? args.len : 20;
@@ -111,6 +119,7 @@ function blob(x, y, args) {
   }
 }
 
+// Resamples polyline plist with reso points per original segment.
 function div(plist, reso) {
   var tl = (plist.length - 1) * reso;
   var lx = 0;
@@ -137,6 +146,10 @@ function div(plist, reso) {
   return rlist;
 }
 
+// Fills a surface with short contour strokes. ptlist is a grid of
+// points (layers of outlines); args: tex number of strokes, wid, len,
+// sha shading width, col/noi/dis functions for colour, wobble and where
+// along the outline strokes fall. ret=1 returns the points.
 var texture = function(ptlist, args) {
   var args = args != undefined ? args : {};
   var xof = args.xof != undefined ? args.xof : 0;

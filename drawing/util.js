@@ -1,3 +1,7 @@
+// Small shared helpers: number mapping, random choices, curves, and
+// poly(), which emits the svg markup everything is ultimately drawn with.
+
+// Replaces NaN/undefined/null with 0 throughout a nested list.
 function unNan(plist) {
   if (typeof plist != "object" || plist == null) {
     return plist || 0;
@@ -7,15 +11,19 @@ function unNan(plist) {
 }
 //console.log(unNan([[undefined,[NaN,NaN],null],false,1]))
 
+// Distance between two points.
 function distance(p0, p1) {
   return Math.sqrt(Math.pow(p0[0] - p1[0], 2) + Math.pow(p0[1] - p1[1], 2));
 }
 
+// Maps value from the range istart..istop onto ostart..ostop.
 function mapval(value, istart, istop, ostart, ostop) {
   return (
     ostart + (ostop - ostart) * (((value - istart) * 1.0) / (istop - istart))
   );
 }
+// Adjusts a list of noise values in place so that it ends where it
+// starts (for closed outlines) and spans exactly 0..1.
 function loopNoise(nslist) {
   var dif = nslist[nslist.length - 1] - nslist[0];
   var bds = [100, -100];
@@ -29,14 +37,18 @@ function loopNoise(nslist) {
   }
 }
 
+// A random element of arr.
 function randChoice(arr) {
   return arr[Math.floor(arr.length * Math.random())];
 }
 
+// A random number between m and M.
 function normRand(m, M) {
   return mapval(Math.random(), 0, 1, m, M);
 }
 
+// A random number in [0, 1) distributed according to weight function
+// func (rejection sampling).
 function wtrand(func) {
   var x = Math.random();
   var y = Math.random();
@@ -47,6 +59,7 @@ function wtrand(func) {
   }
 }
 
+// A roughly bell-distributed random number in [-1, 1).
 function randGaussian() {
   return (
     wtrand(function(x) {
@@ -57,6 +70,8 @@ function randGaussian() {
   );
 }
 
+// Smooths control points P into a curve of rational quadratic bezier
+// segments; w is the weight of the control points.
 function bezmh(P, w) {
   w = w == undefined ? 1 : w;
   if (P.length == 2) {
@@ -97,6 +112,8 @@ function bezmh(P, w) {
   return plist;
 }
 
+// Svg markup for a polyline through plist. args: xof/yof offset, fil
+// fill, str stroke, wid stroke width.
 function poly(plist, args) {
   var args = args != undefined ? args : {};
   var xof = args.xof != undefined ? args.xof : 0;

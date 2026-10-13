@@ -1,3 +1,6 @@
+// Saving the picture.
+
+// Makes the browser download `text` as a file called `filename`.
 function download(filename, text) {
   var element = document.createElement("a");
   element.setAttribute(

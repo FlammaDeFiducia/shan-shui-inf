@@ -1,3 +1,7 @@
+// Scene state (MEM) and chunk generation. A chunk is one drawn thing
+// (a mountain, its water, a boat...) as svg markup; the scroll is generated
+// a 512-wide strip at a time, in either direction.
+
 MEM = {
   chunks: [],
   xmin: 0,
@@ -14,6 +18,8 @@ MEM = {
   plandir: 1,
 };
 
+// Draws plan item p (the i-th of its strip). Returns the resulting
+// chunks: {tag, x, y, canv}, where y sets drawing order.
 function chunkmake(p, i) {
   var out = [];
   if (p.tag == "mount") {

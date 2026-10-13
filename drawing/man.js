@@ -1,4 +1,9 @@
+// Human figures: a jointed stick skeleton clothed in robes, with hats
+// and an optional held item.
+
 var Man = new function() {
+  // The two sides of a ribbon around polyline ptlist whose half-width at
+  // fraction x along it is wfun(x).
   var expand = function(ptlist, wfun) {
     vtxlist0 = [];
     vtxlist1 = [];
@@ -58,6 +63,8 @@ var Man = new function() {
     return [vtxlist0, vtxlist1];
   };
 
+  // Places a shape drawn in unit coordinates onto the segment p0-p1,
+  // scaled and rotated to fit it.
   var tranpoly = function(p0, p1, ptlist) {
     var plist = ptlist.map(function(v) {
       return [-v[0], v[1]];
@@ -74,12 +81,14 @@ var Man = new function() {
     });
     return qlist;
   };
+  // Mirrors a point list left to right.
   var flipper = function(plist) {
     return plist.map(function(v) {
       return [-v[0], v[1]];
     });
   };
 
+  // A cap with a trailing ribbon, fitted to the head segment p0-p1.
   this.hat01 = function(p0, p1, args) {
     var args = args != undefined ? args : {};
     var fli = args.fli != undefined ? args.fli : false;
@@ -124,6 +133,7 @@ var Man = new function() {
     return canv;
   };
 
+  // A wide-brimmed straw hat.
   this.hat02 = function(p0, p1, args) {
     var args = args != undefined ? args : {};
     var fli = args.fli != undefined ? args.fli : false;
@@ -161,6 +171,7 @@ var Man = new function() {
     return canv;
   };
 
+  // A slightly bowed pole between p0 and p1.
   this.stick01 = function(p0, p1, args) {
     var args = args != undefined ? args : {};
     var fli = args.fli != undefined ? args.fli : false;
@@ -196,6 +207,9 @@ var Man = new function() {
   //      /3
   //     4
 
+  // A robed figure standing at (xoff, yoff). args: sca scale, hat and
+  // ite functions drawing the hat and held item, fli facing, ang and len
+  // the joint angles and bone lengths of the skeleton sketched above.
   this.man = function(xoff, yoff, args) {
     var args = args != undefined ? args : {};
     var sca = args.sca != undefined ? args.sca : 0.5;
@@ -231,10 +245,12 @@ var Man = new function() {
     var sct = {
       0: { 1: { 2: {}, 5: { 6: {} }, 7: { 8: {} } }, 3: { 4: {} } },
     };
+    // Skeleton point to picture coordinates, mirrored if flipped.
     var toGlobal = function(v) {
       return [(fli ? -1 : 1) * v[0] + xoff, v[1] + yoff];
     };
 
+    // Path of joints from the root to joint ind in skeleton tree sct.
     function gpar(sct, ind) {
       var keys = Object.keys(sct);
       for (var i = 0; i < keys.length; i++) {
@@ -249,6 +265,7 @@ var Man = new function() {
       }
       return false;
     }
+    // Absolute rotation of joint ind: the sum of angles along its path.
     function grot(sct, ind) {
       var par = gpar(sct, ind);
       var rot = 0;
@@ -257,6 +274,7 @@ var Man = new function() {
       }
       return rot;
     }
+    // Position of joint ind relative to the root.
     function gpos(sct, ind) {
       var par = gpar(sct, ind);
       var pos = [0, 0];
@@ -281,6 +299,8 @@ var Man = new function() {
       //canv += stroke(s.map(toGlobal))
     }
 
+    // Drapes a white, outlined piece of cloth along joints plist; fun gives
+    // its width.
     var cloth = function(plist, fun) {
       var canv = "";
       var tlist = bezmh(plist, 2);
@@ -300,6 +320,7 @@ var Man = new function() {
       return canv;
     };
 
+    // Width of a sleeve along its length.
     var fsleeve = function(x) {
       return (
         sca *
@@ -308,6 +329,7 @@ var Man = new function() {
           (1 - x) * 0.4)
       );
     };
+    // Width of the robe along the body.
     var fbody = function(x) {
       return (
         sca *
@@ -316,6 +338,7 @@ var Man = new function() {
           (1 - x) * 0.5)
       );
     };
+    // Width of the head along its length.
     var fhead = function(x) {
       return sca * 7 * Math.pow(0.25 - Math.pow(x - 0.5, 2), 0.3);
     };

@@ -1,3 +1,9 @@
+// Picks the seed for this session: ?seed=... from the URL if present,
+// otherwise the current time. Also run inside scrolling/worker.js, whose
+// URL carries the page's seed.
+
+// Calls key2f[key](value) for each key=value pair in the URL's query
+// string.
 function parseArgs(key2f) {
   var par = window.location.href.split("?")[1];
   if (par == undefined) {

@@ -1,3 +1,6 @@
+// Perlin noise, adapted from p5.js. The source of all the organic
+// variation in outlines, textures and placement.
+
 //https://raw.githubusercontent.com/processing/p5.js/master/src/math/noise.js
 var Noise = new function() {
   var PERLIN_YWRAPB = 4;
@@ -7,10 +10,13 @@ var Noise = new function() {
   var PERLIN_SIZE = 4095;
   var perlin_octaves = 4;
   var perlin_amp_falloff = 0.5;
+  // Cosine easing of i from 0..1, used to blend between lattice values.
   var scaled_cosine = function(i) {
     return 0.5 * (1.0 - Math.cos(i * Math.PI));
   };
   var perlin;
+  // Smooth noise in [0, 1) at (x, y, z); y and z are optional. The lattice
+  // is filled from Math.random on first use, so it follows the seed.
   this.noise = function(x, y, z) {
     y = y || 0;
     z = z || 0;
@@ -78,6 +84,8 @@ var Noise = new function() {
     }
     return r;
   };
+  // Sets how many octaves are summed and how fast their amplitude falls
+  // off.
   this.noiseDetail = function(lod, falloff) {
     if (lod > 0) {
       perlin_octaves = lod;
@@ -86,6 +94,8 @@ var Noise = new function() {
       perlin_amp_falloff = falloff;
     }
   };
+  // Refills the lattice from its own generator seeded with `seed`,
+  // independent of Math.random.
   this.noiseSeed = function(seed) {
     var lcg = (function() {
       var m = 4294967296,
@@ -94,12 +104,15 @@ var Noise = new function() {
         seed,
         z;
       return {
+        // Starts the sequence from val (random if omitted).
         setSeed: function(val) {
           z = seed = (val == null ? Math.random() * m : val) >>> 0;
         },
+        // Returns the seed the sequence started from.
         getSeed: function() {
           return seed;
         },
+        // Next value in [0, 1) of the linear congruential sequence.
         rand: function() {
           z = (a * z + c) % m;
           return z / m;

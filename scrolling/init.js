@@ -1,3 +1,6 @@
+// Startup: positions the fixed buttons, sizes the picture, starts the
+// view and the animation loop, and wires up the mouse wheel.
+
 window.addEventListener("scroll", function(e) {
   document.getElementById("SETTING").style.left = Math.max(
     4,

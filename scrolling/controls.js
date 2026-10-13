@@ -1,3 +1,6 @@
+// Scrolling and menu controls: the animation loop that moves the view,
+// the arrow buttons, and small helpers used by the menu markup.
+
 // glide there over a few frames (buttons)
 function xcroll(v) {
   MEM.glide += v;
@@ -7,6 +10,8 @@ function pan(v) {
   MEM.cursx += v;
 }
 var lastframe = 0;
+// One animation frame at time t: applies auto-scroll and any glide in
+// progress, keeps the view within what has been drawn, and moves it.
 function frame(t) {
   var dt = lastframe ? Math.min(t - lastframe, 50) : 0;
   lastframe = t;
@@ -35,6 +40,7 @@ function frame(t) {
   update();
   requestAnimationFrame(frame);
 }
+// Styles arrow button `id` (L or R); b highlights it on hover.
 function rstyle(id, b) {
   var a = b ? 0.1 : 0.0;
   document
@@ -63,10 +69,12 @@ function rstyle(id, b) {
     //"position:absolute; top:"+(MEM.windy/2-20)+"px; left:"+(MEM.windx+20)+"px;"
   );
 }
+// Shows or hides element `id`.
 function toggleVisible(id) {
   var v = document.getElementById(id).style.display == "none";
   document.getElementById(id).style.display = v ? "block" : "none";
 }
+// Swaps the text of element `id` between a and b.
 function toggleText(id, a, b) {
   var v = document.getElementById(id).innerHTML;
   document.getElementById(id).innerHTML = v == "" || v == b ? a : b;
@@ -75,6 +83,7 @@ function toggleText(id, a, b) {
 function present() {
   var t0 = 0;
   var last = -1;
+  // One step of the intro pan.
   var tick = function(t) {
     t0 = t0 || t;
     var x = Math.max(0, (t - t0) / 4 - 10);
@@ -91,6 +100,7 @@ function present() {
   };
   requestAnimationFrame(tick);
 }
+// Reloads the page with seed s.
 function reloadWSeed(s) {
   var u = window.location.href.split("?")[0];
   window.location.href = u + "?seed=" + s;

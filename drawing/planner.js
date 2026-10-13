@@ -1,4 +1,11 @@
+// Decides what goes where: lays out mountains, distant ranges, plateaus
+// and boats for a stretch of the scroll, from noise.
+
+// Plans the strip xmin..xmax. Returns a list of {tag, x, y} items for
+// chunks.js to draw; MEM.planmtx records where mountains already stand
+// so plateaus fill the gaps.
 function mountplanner(xmin, xmax) {
+  // Whether f has a local maximum (above 0.3) at (x, y) within radius r.
   function locmax(x, y, f, r) {
     var z0 = f(x, y);
     if (z0 <= 0.3) {
@@ -14,6 +21,8 @@ function mountplanner(xmin, xmax) {
     return true;
   }
 
+  // Adds item r to the plan unless another is within mind of it in x.
+  // Returns whether it was added.
   function chadd(r, mind) {
     mind = mind == undefined ? 10 : mind;
     for (var k = 0; k < reg.length; k++) {
@@ -28,15 +37,19 @@ function mountplanner(xmin, xmax) {
 
   var reg = [];
   var samp = 0.03;
+  // Mountain likelihood at x.
   var ns = function(x, y) {
     return Math.max(Noise.noise(x * samp) - 0.55, 0) * 2;
   };
+  // Inverse noise at x (unused).
   var nns = function(x) {
     return 1 - Noise.noise(x * samp);
   };
+  // A second, finer likelihood field (unused).
   var nnns = function(x, y) {
     return Math.max(Noise.noise(x * samp * 2, 2) - 0.55, 0) * 2;
   };
+  // How far down the picture mountains may reach at x.
   var yr = function(x) {
     return Noise.noise(x * 0.01, Math.PI);
   };

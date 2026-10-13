@@ -1,4 +1,9 @@
+// Polygon helpers: midpoints and triangulation. Triangulation is what
+// lets a shape be filled with many small, individually shaded pieces.
+
 var PolyTools = new function() {
+  // Average of a list of points, given as one array or as separate
+  // arguments.
   this.midPt = function() {
     var plist =
       arguments.length == 1 ? arguments[0] : Array.apply(null, arguments);
@@ -14,18 +19,23 @@ var PolyTools = new function() {
       [0, 0],
     );
   };
+  // Splits polygon plist into triangles by ear clipping, then subdivides
+  // any triangle larger than args.area. args.convex skips the inside test;
+  // args.optimize picks the least sliver-like ear each time.
   this.triangulate = function(plist, args) {
     //return []
     var args = args != undefined ? args : {};
     var area = args.area != undefined ? args.area : 100;
     var convex = args.convex != undefined ? args.convex : false;
     var optimize = args.optimize != undefined ? args.optimize : true;
+    // Slope and intercept [m, k] of the line through two points.
     function lineExpr(pt0, pt1) {
       var den = pt1[0] - pt0[0];
       var m = den == 0 ? Infinity : (pt1[1] - pt0[1]) / den;
       var k = pt0[1] - m * pt0[0];
       return [m, k];
     }
+    // Where two segments cross, or false if they don't.
     function intersect(ln0, ln1) {
       var le0 = lineExpr(...ln0);
       var le1 = lineExpr(...ln1);
@@ -35,6 +45,7 @@ var PolyTools = new function() {
       }
       var x = (le1[1] - le0[1]) / den;
       var y = le0[0] * x + le0[1];
+      // Whether point p lies within the bounding box of segment ln.
       function onSeg(p, ln) {
         //non-inclusive
         return (
@@ -49,6 +60,7 @@ var PolyTools = new function() {
       }
       return false;
     }
+    // Whether pt is inside the polygon (ray casting).
     function ptInPoly(pt, plist) {
       var scount = 0;
       for (var i = 0; i < plist.length; i++) {
@@ -63,6 +75,7 @@ var PolyTools = new function() {
       }
       return scount % 2 == 1;
     }
+    // Whether segment ln lies wholly inside the polygon.
     function lnInPoly(ln, plist) {
       var lnc = [[0, 0], [0, 0]];
       var ep = 0.01;
@@ -86,6 +99,7 @@ var PolyTools = new function() {
       return true;
     }
 
+    // Lengths of the polygon's sides.
     function sidesOf(plist) {
       var slist = [];
       for (var i = 0; i < plist.length; i++) {
@@ -98,6 +112,7 @@ var PolyTools = new function() {
       }
       return slist;
     }
+    // Area of a triangle (Heron's formula).
     function areaOf(plist) {
       var slist = sidesOf(plist);
       var a = slist[0],
@@ -106,6 +121,7 @@ var PolyTools = new function() {
       var s = (a + b + c) / 2;
       return Math.sqrt(s * (s - a) * (s - b) * (s - c));
     }
+    // Area over perimeter: low for thin, sliver-like triangles.
     function sliverRatio(plist) {
       var A = areaOf(plist);
       var P = sidesOf(plist).reduce(function(m, n) {
@@ -113,6 +129,8 @@ var PolyTools = new function() {
       }, 0);
       return A / P;
     }
+    // Finds an ear to clip. Returns [the ear triangle, the remaining
+    // polygon].
     function bestEar(plist) {
       var cuts = [];
       for (var i = 0; i < plist.length; i++) {
@@ -138,6 +156,8 @@ var PolyTools = new function() {
       }
       return best;
     }
+    // Recursively halves a triangle across its longest side until each
+    // piece is smaller than area a.
     function shatter(plist, a) {
       if (plist.length == 0) {
         return [];

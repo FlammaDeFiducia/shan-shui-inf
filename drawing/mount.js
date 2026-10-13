@@ -1,4 +1,9 @@
+// Mountains and what sits on them: full mountains with vegetation and
+// buildings, flat-topped ones, distant silhouettes, and rocks.
+
 var Mount = new function() {
+  // Foothills: small white mounds with faint outlines along the base of
+  // a mountain whose layered outlines are ptlist.
   var foot = function(ptlist, args) {
     var args = args != undefined ? args : {};
     var xof = args.xof != undefined ? args.xof : 0;
@@ -75,6 +80,9 @@ var Mount = new function() {
     return ret ? ftlist : canv;
   };
 
+  // A full mountain centred at (xoff, yoff): layered outlines, contour
+  // texture, then trees, buildings and rocks placed by noise. args: hei,
+  // wid, tex texture density, veg whether to add the larger trees.
   this.mountain = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 100 + Math.random() * 400;
@@ -109,6 +117,8 @@ var Mount = new function() {
       }
     }
 
+    // Places things on the mountain: treeFunc(x, y) is drawn at every grid
+    // point where growthRule(i, j) holds and proofRule then accepts it.
     function vegetate(treeFunc, growthRule, proofRule) {
       var veglist = [];
       for (var i = 0; i < ptlist.length; i += 1) {
@@ -354,6 +364,8 @@ var Mount = new function() {
     }
   };
 
+  // A flat-topped mountain or plateau; args.cho is how low the top is
+  // cut. Its top is then dressed by flatDec.
   this.flatMount = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 40 + Math.random() * 400;
@@ -478,6 +490,7 @@ var Mount = new function() {
       col: "rgba(100,100,100,0.2)",
     });
 
+    // Bounding box of a point list.
     var bound = function(plist) {
       var xmin;
       var xmax;
@@ -505,6 +518,8 @@ var Mount = new function() {
     return canv;
   };
 
+  // Dresses a plateau whose top spans box grbd with a random mix of
+  // rocks, trees and occasionally a pavilion.
   this.flatDec = function(xoff, yoff, grbd) {
     var canv = "";
 
@@ -640,6 +655,8 @@ var Mount = new function() {
     return canv;
   };
 
+  // A distant range: a low silhouette of length args.len filled with
+  // triangles in softly varying greys.
   this.distMount = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 300;
@@ -655,6 +672,7 @@ var Mount = new function() {
     for (var i = 0; i < len / span / seg; i++) {
       ptlist.push([]);
       for (var j = 0; j < seg + 1; j++) {
+        // Point k along the ridge line.
         var tran = function(k) {
           return [
             xoff + k * span,
@@ -667,6 +685,7 @@ var Mount = new function() {
         ptlist[ptlist.length - 1].push(tran(i * seg + j));
       }
       for (var j = 0; j < seg / 2 + 1; j++) {
+        // Point k along the base line.
         var tran = function(k) {
           return [
             xoff + k * span,
@@ -680,6 +699,7 @@ var Mount = new function() {
       }
     }
     for (var i = 0; i < ptlist.length; i++) {
+      // The grey to use at (x, y).
       var getCol = function(x, y) {
         var c = (Noise.noise(x * 0.02, y * 0.02, yoff) * 55 + 200) | 0;
         return "rgb(" + c + "," + c + "," + c + ")";
@@ -704,6 +724,8 @@ var Mount = new function() {
     return canv;
   };
 
+  // A boulder: a lumpy outline with texture strokes; args.sha is the
+  // shading width.
   this.rock = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 80;

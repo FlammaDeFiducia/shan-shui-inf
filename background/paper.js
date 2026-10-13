@@ -1,3 +1,6 @@
+// The paper: fills a small canvas with warm, speckled noise (mirrored
+// so it tiles seamlessly) and uses it as the page and picture background.
+
 var canvas = document.getElementById("bgcanv");
 var ctx = canvas.getContext("2d");
 var reso = 512;
@@ -18,6 +21,7 @@ for (var i = 0; i < reso / 2 + 1; i++) {
   }
 }
 var img = canvas.toDataURL("image/png");
-document.getElementById("BG").style.backgroundImage = "url(" + img + ")";
+var paperimg = "url(" + img + ")";
+document.getElementById("BG").style.backgroundImage = paperimg;
 document.getElementsByTagName("body")[0].style.backgroundImage =
   "url(" + img + ")";

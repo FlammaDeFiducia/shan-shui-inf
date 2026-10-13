@@ -1,3 +1,7 @@
+// Water: clusters of short ripple lines.
+
+// Ripples below (xoff, yoff). args: hei wave height, len spread, clu
+// number of lines.
 function water(xoff, yoff, seed, args) {
   var args = args != undefined ? args : {};
   var hei = args.hei != undefined ? args.hei : 2;

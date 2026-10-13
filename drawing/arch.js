@@ -1,4 +1,8 @@
+// Architecture: huts, houses, pagodas, pavilions, boats and
+// transmission towers, assembled from boxes, roofs and rails.
+
 var Arch = new function() {
+  // Mirrors points (or lists of points) about x = axis, in place.
   var flip = function(ptlist, axis) {
     axis = axis == undefined ? 0 : axis;
     for (var i = 0; i < ptlist.length; i++) {
@@ -15,6 +19,7 @@ var Arch = new function() {
     return ptlist;
   };
 
+  // A thatched roof: a fanned, textured cone.
   var hut = function(xoff, yoff, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 40;
@@ -82,6 +87,10 @@ var Arch = new function() {
     return canv;
   };
 
+  // One storey drawn in perspective: a box of height hei and width wid
+  // whose corner sits at fraction rot across; per is the perspective
+  // offset, tra shows the far edges, bot the base, dec(...) adds wall
+  // decoration.
   var box = function(xoff, yoff, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 20;
@@ -162,6 +171,8 @@ var Arch = new function() {
     return canv;
   };
 
+  // Window/lattice lines for a wall with corners pul, pur, pdl, pdr.
+  // style 1: side panels, 2: vertical bars, 3: grid.
   var deco = function(style, args) {
     var args = args != undefined ? args : {};
     var pul = args.pul != undefined ? args.pul : [0, 0];
@@ -226,6 +237,8 @@ var Arch = new function() {
     return plist;
   };
 
+  // A railing around a storey; fro draws the front run and tra the back,
+  // seg is the number of posts.
   var rail = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 20;
@@ -313,6 +326,7 @@ var Arch = new function() {
     return canv;
   };
 
+  // A tiled hip roof with upturned corners; args.pla adds a name plaque.
   var roof = function(xoff, yoff, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 20;
@@ -323,6 +337,7 @@ var Arch = new function() {
     var wei = args.wei != undefined ? args.wei : 3;
     var pla = args.pla != undefined ? args.pla : [0, ""];
 
+    // Mirrors the roof when it is turned the other way.
     var opf = function(ptlist) {
       if (rot < 0.5) {
         return flip(ptlist);
@@ -431,6 +446,7 @@ var Arch = new function() {
     return canv;
   };
 
+  // A pointed, many-sided pagoda roof.
   var pagroof = function(xoff, yoff, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 20;
@@ -475,6 +491,8 @@ var Arch = new function() {
     return canv;
   };
 
+  // Open pavilion: a thatched roof on posts with a railing and up to two
+  // figures inside.
   this.arch01 = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 70;
@@ -534,6 +552,8 @@ var Arch = new function() {
     return canv;
   };
 
+  // A house of args.sto storeys with decorated walls (style args.sty)
+  // and tiled roofs; args.rai adds railings.
   this.arch02 = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 10;
@@ -593,6 +613,7 @@ var Arch = new function() {
     }
     return canv;
   };
+  // A pagoda: storeys with railings and pointed roofs, narrowing upward.
   this.arch03 = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 10;
@@ -637,6 +658,8 @@ var Arch = new function() {
     }
     return canv;
   };
+  // A small open tower: see-through storeys with railings and pointed
+  // roofs.
   this.arch04 = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 15;
@@ -682,6 +705,8 @@ var Arch = new function() {
     return canv;
   };
 
+  // A boat with a boatman holding a pole. args: len, sca scale, fli
+  // facing.
   this.boat01 = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var len = args.len != undefined ? args.len : 120;
@@ -700,9 +725,11 @@ var Arch = new function() {
 
     var plist1 = [];
     var plist2 = [];
+    // Upper edge of the hull.
     var fun1 = function(x) {
       return Math.pow(Math.sin(x * Math.PI), 0.5) * 7 * sca;
     };
+    // Lower edge of the hull.
     var fun2 = function(x) {
       return Math.pow(Math.sin(x * Math.PI), 0.5) * 10 * sca;
     };
@@ -723,16 +750,19 @@ var Arch = new function() {
     return canv;
   };
 
+  // A lattice transmission tower with drooping wires.
   this.transmissionTower01 = function(xoff, yoff, seed, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 100;
     var wid = args.wid != undefined ? args.wid : 20;
 
     var canv = "";
+    // Local point to picture coordinates.
     var toGlobal = function(v) {
       return [v[0] + xoff, v[1] + yoff];
     };
 
+    // A thin even stroke through the given local points.
     var quickstroke = function(pl) {
       return stroke(div(pl, 5).map(toGlobal), {
         wid: 1,

@@ -1,4 +1,8 @@
+// Trees, from small distant firs to large detailed foreground ones.
+// Each treeNN(x, y, args) returns svg markup for one tree rooted at (x, y).
+
 var Tree = new function() {
+  // Slim tree: a two-line trunk with leaf dabs up its upper part.
   this.tree01 = function(x, y, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 50;
@@ -58,6 +62,7 @@ var Tree = new function() {
       poly(line2, { fil: "none", str: col, wid: 1.5 });
     return canv;
   };
+  // Bush or distant tree: a small cluster of upright dabs.
   this.tree02 = function(x, y, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 16;
@@ -97,6 +102,7 @@ var Tree = new function() {
     }
     return canv;
   };
+  // Tapering trunk, optionally bent by args.ben, with leaf dabs.
   this.tree03 = function(x, y, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 50;
@@ -174,6 +180,8 @@ var Tree = new function() {
     return canv;
   };
 
+  // The two edges [left, right] of a tapering, bending limb of length
+  // args.hei at angle args.ang; det is the point density.
   var branch = function(args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 300;
@@ -246,6 +254,8 @@ var Tree = new function() {
     return [trlist1, trlist2];
   };
 
+  // A curling twig from (tx, ty) that forks dep more times and, if
+  // args.lea[0], ends in a spray of lea[1] leaves.
   var twig = function(tx, ty, dep, args) {
     var args = args != undefined ? args : {};
     var dir = args.dir != undefined ? args.dir : 1;
@@ -258,9 +268,11 @@ var Tree = new function() {
     var twlist = [];
     var tl = 10;
     var hs = Math.random() * 0.5 + 0.5;
+    // Candidate twig curve (unused).
     var fun1 = function(x) {
       return Math.pow(x, 0.5);
     };
+    // Twig curve: sweeps out quickly, then levels off.
     var fun2 = function(x) {
       return -1 / Math.pow(i / tl + 1, 5) + 1;
     };
@@ -319,10 +331,14 @@ var Tree = new function() {
     return canv;
   };
 
+  // Bark for a limb whose edges are trlist: scattered marks, knots and
+  // ragged edge lines.
   var barkify = function(x, y, trlist) {
+    // One bark mark at (x, y): a small wavering closed stroke.
     function bark(x, y, wid, ang) {
       var len = 10 + 10 * Math.random();
       var noi = 0.5;
+      // Outline profile of the mark.
       var fun = function(x) {
         return x <= 1
           ? Math.pow(Math.sin(x * Math.PI), 0.5)
@@ -446,6 +462,8 @@ var Tree = new function() {
     return canv;
   };
 
+  // Large gnarled tree with a bent trunk, bark, side branches and leafy
+  // twigs.
   this.tree04 = function(x, y, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 300;
@@ -534,6 +552,8 @@ var Tree = new function() {
     return canv;
   };
 
+  // Tall straight tree with many short side branches bearing small
+  // sprays, densest mid-trunk.
   this.tree05 = function(x, y, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 300;
@@ -629,6 +649,8 @@ var Tree = new function() {
     return canv;
   };
 
+  // Bare branching tree built recursively, with bark and a few leafless
+  // twigs.
   this.tree06 = function(x, y, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 100;
@@ -640,6 +662,8 @@ var Tree = new function() {
     var txcanv = "";
     var twcanv = "";
 
+    // Grows a limb and recursively its sub-branches to depth dep;
+    // returns the combined outline.
     function fracTree(xoff, yoff, dep, args) {
       var args = args != undefined ? args : {};
       var hei = args.hei != undefined ? args.hei : 300;
@@ -745,6 +769,8 @@ var Tree = new function() {
     return canv;
   };
 
+  // Tree with a canopy of large blots, each triangulated and shaded
+  // piece by piece.
   this.tree07 = function(x, y, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 60;
@@ -837,6 +863,7 @@ var Tree = new function() {
     return canv;
   };
 
+  // Thin sapling with fine fractal twigs.
   this.tree08 = function(x, y, args) {
     var args = args != undefined ? args : {};
     var hei = args.hei != undefined ? args.hei : 80;
@@ -861,6 +888,8 @@ var Tree = new function() {
 
     trlist = trlist[0].concat(trlist[1].reverse());
 
+    // Draws one twig segment and recursively forks from its end, dep
+    // levels deep. Returns markup.
     function fracTree(xoff, yoff, dep, args) {
       var args = args != undefined ? args : {};
       var ang = args.ang != undefined ? args.ang : -Math.PI / 2;
